@@ -43,8 +43,9 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-02-01' = {
   }
   properties: {
     dnsPrefix: clusterName
-    // enableRBAC: true
+    enableRBAC: true // Kubernetes RBAC
     disableLocalAccounts: false
+    kubernetesVersion: '1.28'
 
     // aadProfile: {
     //   enableAzureRBAC: true
