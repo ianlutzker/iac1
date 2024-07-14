@@ -2,20 +2,21 @@
 
 targetScope = 'subscription'
 
+param resourceGroupName string = 'aks-${randomString}-rg'
 param resourceGroupLocation string = 'westus3'
 param randomString string = take(uniqueString(subscription().id), 5)
 
 module resourceGroupModule 'modules/rg.bicep' = {
   scope: subscription()
-  name: 'resourceGroupDeployment'
+  name: 'rgDeployment'
   params: {
-    resourceGroupName: 'aks-${randomString}-rg'
+    resourceGroupName: resourceGroupName
     resourceGroupLocation: resourceGroupLocation
   }
 }
 
 module aksModule 'modules/aks.bicep' = {
-  scope: resourceGroup(resourceGroupModule.name)
+  scope: resourceGroup(resourceGroupName)
   dependsOn: [ resourceGroupModule ]
   name: 'aksDeployment'
   params: {
