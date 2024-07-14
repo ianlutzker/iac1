@@ -1,3 +1,5 @@
+param tags object
+
 @description('The name of the Managed Cluster resource.')
 param clusterName string
 
@@ -31,12 +33,44 @@ param agentVMSize string
 resource aks 'Microsoft.ContainerService/managedClusters@2024-02-01' = {
   name: clusterName
   location: location
+  tags: tags
+  sku: {
+    tier: 'Free'
+  }
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
-
     dnsPrefix: clusterName
+    // enableRBAC: true
+    disableLocalAccounts: false
+
+    // aadProfile: {
+    //   enableAzureRBAC: true
+    //   managed: true
+    // }
+    
+    storageProfile: {
+      blobCSIDriver: {
+        enabled: true
+      }
+      diskCSIDriver: {
+        enabled: true
+      }
+      fileCSIDriver: {
+        enabled: true
+      }
+    }
+    
+    networkProfile: {
+      networkPlugin: 'kubenet' // 'azure'
+      //loadBalancerSku: 'standard'
+      outboundType: 'managedNATGateway'
+      // networkMode: 'bridge'
+      // networkPluginMode: 'overlay'
+      // networkPolicy: 'calico'
+    }
+
     agentPoolProfiles: [
       {
         name: agentPoolName
@@ -45,6 +79,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-02-01' = {
         vmSize: agentVMSize
         osType: 'Linux'
         mode: 'System'
+        
       }
     ]
     // linuxProfile: {

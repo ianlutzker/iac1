@@ -1,15 +1,15 @@
-// az deployment sub create --location eastus --template-file main.bicep --parameters resourceGroupLocation='westus3'
+// az deployment sub create --location westus3 --template-file main.bicep
 
 targetScope = 'subscription'
 
-param resourceGroupLocation string
+param resourceGroupLocation string = 'westus3'
 param randomString string = take(uniqueString(subscription().id), 5)
 
 module resourceGroupModule 'modules/rg.bicep' = {
   scope: subscription()
-  name: 'aks${randomString}rg'
+  name: 'resourceGroupDeployment'
   params: {
-    resourceGroupName: 'aks${randomString}rg'
+    resourceGroupName: 'aks-${randomString}-rg'
     resourceGroupLocation: resourceGroupLocation
   }
 }
@@ -17,9 +17,10 @@ module resourceGroupModule 'modules/rg.bicep' = {
 module aksModule 'modules/aks.bicep' = {
   scope: resourceGroup(resourceGroupModule.name)
   dependsOn: [ resourceGroupModule ]
-  name: 'aks'
+  name: 'aksDeployment'
   params: {
-    clusterName: 'aks${randomString}cluster'
+    tags: resourceGroupModule.outputs.resourceGroupTags
+    clusterName: 'aks-${randomString}-cluster'
     location: resourceGroupModule.outputs.resourceGroupLocation
     //dnsPrefix: 'aks${randomString}cluster'
     agentPoolName: 'agentpool1'
