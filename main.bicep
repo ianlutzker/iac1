@@ -22,6 +22,7 @@ module aksModule 'modules/aks.bicep' = {
     clusterName: 'aks${randomString}cluster'
     location: resourceGroupModule.outputs.resourceGroupLocation
     //dnsPrefix: 'aks${randomString}cluster'
+    agentPoolName: 'agentpool1'
     osDiskSizeGB: 0
     agentCount: 1
     agentVMSize: 'Standard_B2als_v2'
